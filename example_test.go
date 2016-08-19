@@ -37,10 +37,10 @@ func ExamplePartition() {
 func ExampleStrings() {
 	ss := strings.Fields("many of us have seen the cost of war")
 	Strings(&ss, func(s string) bool {
-		return len(s) < 4
+		return len(s) >= 4
 	})
 	fmt.Println(strings.Join(ss, " "))
-	// Output: of us the of war
+	// Output: many have seen cost
 }
 
 func isPrime(z int) bool {
@@ -61,10 +61,10 @@ func ExampleInts() {
 }
 
 func ExampleSortable() {
-	ss := sort.StringSlice(strings.Fields("Peter Piper picked a peck of Packed Peppers for lunch"))
+	ss := sort.StringSlice(strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch"))
 	i := Partition(Sortable(ss, func(i int) bool {
 		return unicode.IsUpper(rune(ss[i][0]))
 	}))
 	fmt.Println(strings.Join(ss[:i], " "))
-	// Output: Peter Piper Packed Peppers
+	// Output: Peter Piper Pickled Peppers
 }
