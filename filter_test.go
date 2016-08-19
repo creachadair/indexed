@@ -7,6 +7,15 @@ import (
 	"github.com/kylelemons/godebug/pretty"
 )
 
+type ssfunc struct {
+	ss   []string
+	keep func(string) bool
+}
+
+func (s ssfunc) Len() int        { return len(s.ss) }
+func (s ssfunc) Swap(i, j int)   { s.ss[i], s.ss[j] = s.ss[j], s.ss[i] }
+func (s ssfunc) Keep(i int) bool { return s.keep(s.ss[i]) }
+
 func TestPartition(t *testing.T) {
 	tests := []struct {
 		desc, input string

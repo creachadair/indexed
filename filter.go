@@ -4,17 +4,23 @@ package filter
 
 import "sort"
 
+// A Collection expresses an indexed collection with a length and the ability
+// to exchange elements by position. It is a subset of sort.Interface.
+type Collection interface {
+	// Len reports the number of elements in the collection.
+	Len() int
+
+	// Swap exchanges the elements at indexes i and j.
+	Swap(i, j int)
+}
+
 // A Filterable collection can be processed by the functions in this package.
 //
 // This interface is intentionally similar to sort.Interface so a filterable
 // type can be made sortable by including a comparison and a sortable type can
 // be made filterable by including a selector.
 type Filterable interface {
-	// Len reports the number of elements in the collection.
-	Len() int
-
-	// Swap exchanges the elements at indexes i and j.
-	Swap(i, j int)
+	Collection
 
 	// Keep reports whether the element at index i should be retained.
 	Keep(i int) bool
@@ -70,39 +76,28 @@ func Partition(f Filterable) int {
 	return i
 }
 
-type ssfunc struct {
-	ss   []string
-	keep func(string) bool
-}
-
-func (s ssfunc) Len() int        { return len(s.ss) }
-func (s ssfunc) Swap(i, j int)   { s.ss[i], s.ss[j] = s.ss[j], s.ss[i] }
-func (s ssfunc) Keep(i int) bool { return s.keep(s.ss[i]) }
-
 // Strings modifies *ss in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If ss == nil, this function panics.
-func Strings(ss *[]string, keep func(string) bool) { *ss = (*ss)[:Partition(ssfunc{*ss, keep})] }
-
-type zzfunc struct {
-	zs   []int
-	keep func(int) bool
+func Strings(ss *[]string, keep func(string) bool) {
+	rkeep := func(i int) bool { return keep((*ss)[i]) }
+	*ss = (*ss)[:Partition(Adapt(sort.StringSlice(*ss), rkeep))]
 }
-
-func (z zzfunc) Len() int        { return len(z.zs) }
-func (z zzfunc) Swap(i, j int)   { z.zs[i], z.zs[j] = z.zs[j], z.zs[i] }
-func (z zzfunc) Keep(i int) bool { return z.keep(z.zs[i]) }
 
 // Ints modifies *zs in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If zs == nil, this function panics.
-func Ints(zs *[]int, keep func(int) bool) { *zs = (*zs)[:Partition(zzfunc{*zs, keep})] }
+func Ints(zs *[]int, keep func(int) bool) {
+	rkeep := func(i int) bool { return keep((*zs)[i]) }
+	*zs = (*zs)[:Partition(Adapt(sort.IntSlice(*zs), rkeep))]
+}
 
-type sortFilter struct {
-	sort.Interface
+type collFilter struct {
+	Collection
 	keep func(i int) bool
 }
 
-func (sf sortFilter) Keep(i int) bool { return sf.keep(i) }
+func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
-// Sortable adapts a sort.Interface to a Filterable, using keep as the
-// selection function.
-func Sortable(s sort.Interface, keep func(i int) bool) Filterable { return sortFilter{s, keep} }
+// Adapt adapts a Collection to a Filterable, with keep as the selection rule.
+// Since Swapper is also a subset of sort.Interface, this can be used to filter
+// any sortable type also.
+func Adapt(c Collection, keep func(i int) bool) Filterable { return collFilter{c, keep} }

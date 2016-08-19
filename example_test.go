@@ -60,11 +60,13 @@ func ExampleInts() {
 	// primes: [2 3 5 7 11 13]
 }
 
-func ExampleSortable() {
-	ss := sort.StringSlice(strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch"))
-	i := Partition(Sortable(ss, func(i int) bool {
+func ExampleAdapt() {
+	ss := strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch")
+
+	i := Partition(Adapt(sort.StringSlice(ss), func(i int) bool {
 		return unicode.IsUpper(rune(ss[i][0]))
 	}))
+
 	fmt.Println(strings.Join(ss[:i], " "))
 	// Output: Peter Piper Pickled Peppers
 }
