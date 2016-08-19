@@ -60,8 +60,8 @@ func Partition(f Filterable) int {
 		//     0         i       j         n
 		//
 		// where + denotes a kept element, - unkept, and ? unknown.
-		// The next unkept element (if any) therefore be at i+1, and next
-		// candidate to replace it must be > j.
+		// The next unkept element (if any) must therefore be at i+1, and the
+		// next candidate to replace it must be > j.
 
 		f.Swap(i, j)
 		i++
