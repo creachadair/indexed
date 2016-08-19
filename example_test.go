@@ -12,7 +12,7 @@ func (n nonEmpty) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
 func (n nonEmpty) Keep(i int) bool    { return n[i] != "" }
 func (n nonEmpty) Less(i, j int) bool { return n[i] < n[j] }
 
-func Example_Partition() {
+func ExamplePartition() {
 	// var nonEmpty []string
 	// ... methods
 	s1 := strings.Split("a,lot,,of,values,,here,", ",")
@@ -32,7 +32,7 @@ func Example_Partition() {
 	// new ["a" "lot" "of" "values" "here"]
 }
 
-func Example_Strings() {
+func ExampleStrings() {
 	ss := strings.Fields("many of us have seen the cost of war")
 	Strings(&ss, func(s string) bool {
 		return len(s) < 4
@@ -50,7 +50,7 @@ func isPrime(z int) bool {
 	return z == 2 || z > 2 && z%2 == 1
 }
 
-func Example_Ints() {
+func ExampleInts() {
 	zz := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 	Ints(&zz, isPrime)
 	fmt.Printf("primes: %+v\n", zz)
