@@ -57,7 +57,7 @@ func Partition(f Filterable) int {
 		// them in order, then advance the cursors. After swapping, we have:
 		//
 		//    [+ + + + + + - - - - ? ? ? ?]
-		//     0         i         j       n
+		//     0         i       j         n
 		//
 		// where + denotes a kept element, - unkept, and ? unknown.
 		// The next unkept element (if any) therefore be at i+1, and next
