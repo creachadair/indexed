@@ -78,7 +78,7 @@ func (s ssfunc) Swap(i, j int)   { s.ss[i], s.ss[j] = s.ss[j], s.ss[i] }
 func (s ssfunc) Keep(i int) bool { return s.keep(s.ss[i]) }
 
 // Strings modifies *ss in-place to remove any elements for which keep returns
-// false. Order is not preserved. If ss == nil, this function will panic.
+// false. Relative input order is preserved. If ss == nil, this function panics.
 func Strings(ss *[]string, keep func(string) bool) { *ss = (*ss)[:Partition(ssfunc{*ss, keep})] }
 
 type zzfunc struct {
@@ -91,5 +91,5 @@ func (z zzfunc) Swap(i, j int)   { z.zs[i], z.zs[j] = z.zs[j], z.zs[i] }
 func (z zzfunc) Keep(i int) bool { return z.keep(z.zs[i]) }
 
 // Ints modifies *zs in-place to remove any elements for which keep returns
-// false. Order is not preserved. If zs == nil, this function will panic.
+// false. Relative input order is preserved. If zs == nil, this function panics.
 func Ints(zs *[]int, keep func(int) bool) { *zs = (*zs)[:Partition(zzfunc{*zs, keep})] }
