@@ -31,3 +31,29 @@ func Example_Partition() {
 	// old ["a" "lot" "of" "values" "here" "" "" ""]
 	// new ["a" "lot" "of" "values" "here"]
 }
+
+func Example_Strings() {
+	ss := strings.Fields("many of us have seen the cost of war")
+	Strings(&ss, func(s string) bool {
+		return len(s) < 4
+	})
+	fmt.Println(strings.Join(ss, " "))
+	// Output: of us the of war
+}
+
+func isPrime(z int) bool {
+	for i := 3; i*i <= z; i += 2 {
+		if z%i == 0 {
+			return false
+		}
+	}
+	return z == 2 || z > 2 && z%2 == 1
+}
+
+func Example_Ints() {
+	zz := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
+	Ints(&zz, isPrime)
+	fmt.Printf("primes: %+v\n", zz)
+	// Output:
+	// primes: [2 3 5 7 11 13]
+}
