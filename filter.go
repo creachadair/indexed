@@ -20,7 +20,7 @@ type Filterable interface {
 
 // Partition rearranges the elements of f so that all the kept elements precede
 // all the non-kept elements, returning an index i such that f.Keep(i) == j < i
-// for all 0 ≤ i, j < f.Len(). The relative input order of the kept elements is
+// for all 0 ≤ i, j ≤ f.Len(). The relative input order of the kept elements is
 // preserved, but the unkept elements are permuted arbitrarily.
 //
 // Partition takes time proportional to f.Len() and swaps each kept element at
