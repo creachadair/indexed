@@ -2,6 +2,8 @@
 // such as slices.
 package filter
 
+import "sort"
+
 // A Filterable collection can be processed by the functions in this package.
 //
 // This interface is intentionally similar to sort.Interface so a filterable
@@ -93,3 +95,14 @@ func (z zzfunc) Keep(i int) bool { return z.keep(z.zs[i]) }
 // Ints modifies *zs in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If zs == nil, this function panics.
 func Ints(zs *[]int, keep func(int) bool) { *zs = (*zs)[:Partition(zzfunc{*zs, keep})] }
+
+type sortFilter struct {
+	sort.Interface
+	keep func(i int) bool
+}
+
+func (sf sortFilter) Keep(i int) bool { return sf.keep(i) }
+
+// Sortable adapts a sort.Interface to a Filterable, using keep as the
+// selection function.
+func Sortable(s sort.Interface, keep func(i int) bool) Filterable { return sortFilter{s, keep} }
