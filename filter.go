@@ -12,7 +12,8 @@ type Collection interface {
 	Swap(i, j int)
 }
 
-// A Filterable collection can be partitioned according to a selection rule.
+// A Filterable is an indexed collection that can be partitioned according to a
+// selection rule, expressed by its Keep method.
 //
 // This interface is intentionally similar to sort.Interface so a filterable
 // type can be made sortable by including a comparison and a sortable type can
