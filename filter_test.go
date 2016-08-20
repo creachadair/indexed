@@ -57,7 +57,7 @@ don't forget to pay the rent`, []string{
 		t.Logf("After partition: %+v ~ %+v", words[:gotPos], words[gotPos:])
 		got := words[:gotPos]
 		if diff := pretty.Compare(got, test.want); diff != "" {
-			t.Errorf("Prefix differs from expected (-got, +want)\n%s", test.desc, diff)
+			t.Errorf("Prefix differs from expected (-got, +want)\n%s", diff)
 		}
 	}
 }
