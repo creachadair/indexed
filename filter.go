@@ -2,8 +2,6 @@
 // such as slices.
 package filter
 
-import "sort"
-
 // A Collection expresses an indexed collection with a length and the ability
 // to exchange elements by position. It is a subset of sort.Interface.
 type Collection interface {
@@ -74,20 +72,6 @@ func Partition(f Filterable) int {
 		j++
 	}
 	return i
-}
-
-// Strings modifies *ss in-place to remove any elements for which keep returns
-// false. Relative input order is preserved. If ss == nil, this function panics.
-func Strings(ss *[]string, keep func(string) bool) {
-	rkeep := func(i int) bool { return keep((*ss)[i]) }
-	*ss = (*ss)[:Partition(Adapt(sort.StringSlice(*ss), rkeep))]
-}
-
-// Ints modifies *zs in-place to remove any elements for which keep returns
-// false. Relative input order is preserved. If zs == nil, this function panics.
-func Ints(zs *[]int, keep func(int) bool) {
-	rkeep := func(i int) bool { return keep((*zs)[i]) }
-	*zs = (*zs)[:Partition(Adapt(sort.IntSlice(*zs), rkeep))]
 }
 
 type collFilter struct {
