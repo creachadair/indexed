@@ -12,7 +12,7 @@ type Collection interface {
 	Swap(i, j int)
 }
 
-// A Filterable collection can be processed by the functions in this package.
+// A Filterable collection can be partitioned according to a selection rule.
 //
 // This interface is intentionally similar to sort.Interface so a filterable
 // type can be made sortable by including a comparison and a sortable type can
