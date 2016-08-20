@@ -82,6 +82,6 @@ type collFilter struct {
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
 // Adapt adapts a Collection to a Filterable, with keep as the selection rule.
-// Since Swapper is also a subset of sort.Interface, this can be used to filter
-// any sortable type also.
+// Since Collection is also a subset of sort.Interface, this can be used to
+// filter any sortable type also.
 func Adapt(c Collection, keep func(i int) bool) Filterable { return collFilter{c, keep} }
