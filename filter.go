@@ -2,9 +2,9 @@
 // such as slices.
 package filter
 
-// A Collection expresses an indexed collection with a length and the ability
-// to exchange elements by position. It is a subset of sort.Interface.
-type Collection interface {
+// Indexed expresses an indexed collection with a length and the ability to
+// exchange elements by position. It is a subset of sort.Interface.
+type Indexed interface {
 	// Len reports the number of elements in the collection.
 	Len() int
 
@@ -19,7 +19,7 @@ type Collection interface {
 // type can be made sortable by including a comparison and a sortable type can
 // be made filterable by including a selector.
 type Filterable interface {
-	Collection
+	Indexed
 
 	// Keep reports whether the element at index i should be retained.
 	Keep(i int) bool
@@ -76,13 +76,13 @@ func Partition(f Filterable) int {
 }
 
 type collFilter struct {
-	Collection
+	Indexed
 	keep func(i int) bool
 }
 
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
 // Adapt adapts a Collection to a Filterable, with keep as the selection rule.
-// Since Collection is also a subset of sort.Interface, this can be used to
-// filter any sortable type also.
-func Adapt(c Collection, keep func(i int) bool) Filterable { return collFilter{c, keep} }
+// Since Indexed is also a subset of sort.Interface, this can be used to filter
+// any sortable type also.
+func Adapt(c Indexed, keep func(i int) bool) Filterable { return collFilter{c, keep} }
