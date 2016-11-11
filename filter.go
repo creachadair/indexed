@@ -82,7 +82,7 @@ type collFilter struct {
 
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
-// Adapt adapts a Collection to a Filterable, with keep as the selection rule.
-// Since Indexed is also a subset of sort.Interface, this can be used to filter
-// any sortable type also.
+// Adapt adapts an Indexed collection to a Filterable, with keep as the
+// selection rule.  Since Indexed is also a subset of sort.Interface, this can
+// be used to filter any sortable type also.
 func Adapt(c Indexed, keep func(i int) bool) Filterable { return collFilter{c, keep} }
