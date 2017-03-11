@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"sort"
 	"strings"
 	"testing"
 
@@ -82,6 +83,31 @@ func TestStrings(t *testing.T) {
 		want := strings.Fields(test.want)
 		if diff := pretty.Compare(words, want); diff != "" {
 			t.Errorf("Strings %q output differs from expected (-got, +want)\n%s", test.input, diff)
+		}
+	}
+}
+
+func TestSortUnique(t *testing.T) {
+	tests := []struct {
+		input []string
+		want  int
+	}{
+		// The result should be the number of unique elements in the input.
+		{nil, 0},
+		{[]string{}, 0},
+		{[]string{"apple"}, 1},
+		{[]string{"apple", "pear", "plum"}, 3},
+		{[]string{"apple", "pear", "apple", "cherry", "plum"}, 4},
+		{[]string{"p", "p", "p", "p", "p"}, 1},
+	}
+	for _, test := range tests {
+		result := make([]string, len(test.input))
+		copy(result, test.input)
+		got := SortUnique(sort.StringSlice(result))
+		if got != test.want {
+			t.Errorf("SortUnique(%+q): got %d, want %d", test.input, got, test.want)
+		} else if !sort.StringsAreSorted(result[:got]) {
+			t.Errorf("SortUnique(%+q): results are not sorted: %+q", test.input, result)
 		}
 	}
 }

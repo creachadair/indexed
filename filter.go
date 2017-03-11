@@ -2,6 +2,8 @@
 // such as slices.
 package filter
 
+import "sort"
+
 // Indexed expresses an indexed collection with a length and the ability to
 // exchange elements by position. It is a subset of sort.Interface.
 type Indexed interface {
@@ -86,3 +88,33 @@ func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 // selection rule.  Since Indexed is also a subset of sort.Interface, this can
 // be used to filter any sortable type also.
 func Adapt(c Indexed, keep func(i int) bool) Filterable { return collFilter{c, keep} }
+
+// SortUnique sorts s and then partitions it so that all the elements at or
+// left of the partition point are unique and any duplicates are to the right
+// of the partition.
+//
+// The return value is also the number of unique elements in s.
+func SortUnique(s sort.Interface) int {
+	if s.Len() == 0 {
+		return 0
+	}
+	sort.Sort(s)
+
+	// Invariant: All the elements of s at positions ≤ i are unique.
+	i, j := 0, 1
+	for j < s.Len() {
+		// if s[i] ≠ s[j] then s[j] does not yet exist on the unique side.
+		// Move it to the left and advance i.
+		//
+		// Otherwise, s[k] == s[i] for all i ≤ k ≤ j, meaning we are scanning a
+		// run of duplicates of s[i] and should leave i alone.
+		if s.Less(i, j) || s.Less(j, i) {
+			i++
+			if i != j {
+				s.Swap(i, j)
+			}
+		}
+		j++
+	}
+	return i + 1
+}
