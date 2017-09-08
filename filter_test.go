@@ -1,6 +1,7 @@
 package filter
 
 import (
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -109,5 +110,39 @@ func TestSortUnique(t *testing.T) {
 		} else if !sort.StringsAreSorted(result[:got]) {
 			t.Errorf("SortUnique(%+q): results are not sorted: %+q", test.input, result)
 		}
+	}
+}
+
+func TestAdaptSlice(t *testing.T) {
+	//             -  +  +  -  -  +  +
+	input := []int{8, 0, 2, 7, 5, 3, 4}
+	vs := make([]int, len(input))
+	copy(vs, input)
+
+	Partition(Adapt(vs, func(i int) bool {
+		return vs[i] < 5
+	}))
+
+	//            +  +  +  +  -  -  -
+	want := []int{0, 2, 3, 4, 5, 8, 7}
+	if !reflect.DeepEqual(vs, want) {
+		t.Errorf("Partition %+v: got %+v, want %+v", input, vs, want)
+	}
+}
+
+func TestAdaptIndexed(t *testing.T) {
+	//                -       +     +      +      -        +      -
+	input := []string{"join", "us", "now", "and", "share", "the", "software"}
+	vs := make([]string, len(input))
+	copy(vs, input)
+
+	Partition(Adapt(sort.StringSlice(vs), func(i int) bool {
+		return len(vs[i]) <= 3
+	}))
+
+	//               +     +      +      +      -        -       -
+	want := []string{"us", "now", "and", "the", "share", "join", "software"}
+	if !reflect.DeepEqual(vs, want) {
+		t.Errorf("Partition %+v: got %+v, want %+v", input, vs, want)
 	}
 }

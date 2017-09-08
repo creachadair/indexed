@@ -2,7 +2,10 @@
 // such as slices.
 package filter
 
-import "sort"
+import (
+	"reflect"
+	"sort"
+)
 
 // Indexed expresses an indexed collection with a length and the ability to
 // exchange elements by position. It is a subset of sort.Interface.
@@ -84,10 +87,30 @@ type collFilter struct {
 
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
-// Adapt adapts an Indexed collection to a Filterable, with keep as the
-// selection rule.  Since Indexed is also a subset of sort.Interface, this can
-// be used to filter any sortable type also.
-func Adapt(c Indexed, keep func(i int) bool) Filterable { return collFilter{c, keep} }
+// Adapt adapts v to a Filterable, with keep as the selection rule.
+//
+// If v is Indexed, which includes any implementation of sort.Interface, its
+// existing methods are used. Otherwise, if v is any slice type, it is adapted
+// to Indexed via reflection. Any other type will cause Adapt to panic.
+func Adapt(v interface{}, keep func(i int) bool) Filterable {
+	if c, ok := v.(Indexed); ok {
+		return collFilter{Indexed: c, keep: keep}
+	} else if reflect.TypeOf(v).Kind() != reflect.Slice {
+		panic("filter: unable to adapt non-slice type")
+	}
+	return collFilter{Indexed: anySlice{reflect.ValueOf(v)}, keep: keep}
+}
+
+type anySlice struct{ v reflect.Value }
+
+func (a anySlice) Len() int { return a.v.Len() }
+
+func (a anySlice) Swap(i, j int) {
+	u, v := a.v.Index(i), a.v.Index(j)
+	t := u.Interface()
+	u.Set(v)
+	v.Set(reflect.ValueOf(t))
+}
 
 // SortUnique sorts s and then partitions it so that all the elements at or
 // left of the partition point are unique and any duplicates are to the right
