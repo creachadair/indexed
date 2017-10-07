@@ -127,11 +127,12 @@ func SortUnique(s sort.Interface) int {
 	i, j := 0, 1
 	for j < s.Len() {
 		// if s[i] ≠ s[j] then s[j] does not yet exist on the unique side.
-		// Move it to the left and advance i.
+		// Move it to the left and advance i. N.B.: Because the collection is
+		// sorted, s[i] ≠ s[j] means s[i] < s[j].
 		//
 		// Otherwise, s[k] == s[i] for all i ≤ k ≤ j, meaning we are scanning a
 		// run of duplicates of s[i] and should leave i alone.
-		if s.Less(i, j) || s.Less(j, i) {
+		if s.Less(i, j) {
 			i++
 			if i != j {
 				s.Swap(i, j)
