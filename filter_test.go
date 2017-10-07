@@ -119,9 +119,7 @@ func TestAdaptSlice(t *testing.T) {
 	vs := make([]int, len(input))
 	copy(vs, input)
 
-	Partition(Adapt(vs, func(i int) bool {
-		return vs[i] < 5
-	}))
+	Slice(vs, func(i int) bool { return vs[i] < 5 })
 
 	//            +  +  +  +  -  -  -
 	want := []int{0, 2, 3, 4, 5, 8, 7}

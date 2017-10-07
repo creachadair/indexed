@@ -101,6 +101,9 @@ func Adapt(v interface{}, keep func(i int) bool) Filterable {
 	return collFilter{Indexed: anySlice{reflect.ValueOf(v)}, keep: keep}
 }
 
+// Slice filters v according to keep. It is shorthand for Partition(Adapt(v, keep)).
+func Slice(v interface{}, keep func(i int) bool) int { return Partition(Adapt(v, keep)) }
+
 type anySlice struct{ v reflect.Value }
 
 func (a anySlice) Len() int { return a.v.Len() }
