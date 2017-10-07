@@ -70,3 +70,13 @@ func ExampleAdapt() {
 	fmt.Println(strings.Join(ss[:i], " "))
 	// Output: Peter Piper Pickled Peppers
 }
+
+func ExampleSlice() {
+	zs := []int{-8, 6, -7, 5, -3, 0, -9}
+	i := Slice(zs, func(i int) bool {
+		return zs[i] >= 0
+	})
+
+	fmt.Println(zs[:i])
+	// Output: [6 5 0]
+}
