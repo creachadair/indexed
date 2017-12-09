@@ -79,3 +79,14 @@ func ExampleSlice() {
 	fmt.Println(zs[:i])
 	// Output: [6 5 0]
 }
+
+func ExampleSortUnique() {
+	ss := strings.Fields("and or not or if and not but and if not or and and if")
+
+	// SortUnique can be used to remove duplicates from a slice without
+	// allocating a new slice.  It does this by sorting the slice in-place and
+	// moving all the unique elements to the head of the slice.
+	n := SortUnique(sort.StringSlice(ss))
+	fmt.Println(strings.Join(ss[:n], " "))
+	// Output: and but if not or
+}
