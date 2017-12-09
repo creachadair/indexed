@@ -60,12 +60,12 @@ func ExampleInts() {
 	// primes: [2 3 5 7 11 13]
 }
 
-func ExampleAdapt() {
+func ExampleIndexed() {
 	ss := strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch")
 
-	i := Partition(Adapt(sort.StringSlice(ss), func(i int) bool {
+	i := Indexed(sort.StringSlice(ss), func(i int) bool {
 		return unicode.IsUpper(rune(ss[i][0]))
-	}))
+	})
 
 	fmt.Println(strings.Join(ss[:i], " "))
 	// Output: Peter Piper Pickled Peppers

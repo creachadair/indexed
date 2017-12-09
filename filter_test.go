@@ -134,9 +134,9 @@ func TestAdaptIndexed(t *testing.T) {
 	vs := make([]string, len(input))
 	copy(vs, input)
 
-	Partition(Adapt(sort.StringSlice(vs), func(i int) bool {
+	Indexed(sort.StringSlice(vs), func(i int) bool {
 		return len(vs[i]) <= 3
-	}))
+	})
 
 	//               +     +      +      +      -        -       -
 	want := []string{"us", "now", "and", "the", "share", "join", "software"}

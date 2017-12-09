@@ -87,22 +87,15 @@ type collFilter struct {
 
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
-// Adapt adapts v to a Partitioner, with keep as the selection rule.
-//
-// If v is a Swapper, which includes any implementation of sort.Interface, its
-// existing methods are used. Otherwise, if v is any slice type, it is adapted
-// to a Swapper via reflection. Any other type will cause Adapt to panic.
-func Adapt(v interface{}, keep func(i int) bool) Partitioner {
-	if c, ok := v.(Swapper); ok {
-		return collFilter{Swapper: c, keep: keep}
-	} else if reflect.TypeOf(v).Kind() != reflect.Slice {
-		panic("filter: unable to adapt non-slice type")
-	}
-	return collFilter{Swapper: anySlice{reflect.ValueOf(v)}, keep: keep}
+// Indexed partitions a Swapper, using keep as the selection rule.
+func Indexed(v Swapper, keep func(i int) bool) int {
+	return Partition(collFilter{Swapper: v, keep: keep})
 }
 
-// Slice filters v according to keep. It is shorthand for Partition(Adapt(v, keep)).
-func Slice(v interface{}, keep func(i int) bool) int { return Partition(Adapt(v, keep)) }
+// Slice filters v according to keep. It will panic if v is not a slice type.
+func Slice(v interface{}, keep func(i int) bool) int {
+	return Indexed(anySlice{reflect.ValueOf(v)}, keep)
+}
 
 type anySlice struct{ v reflect.Value }
 
