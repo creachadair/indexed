@@ -107,11 +107,13 @@ func (a anySlice) Swap(i, j int) {
 	v.Set(reflect.ValueOf(t))
 }
 
-// SortUnique sorts s and then partitions it so that all the elements at or
-// left of the partition point are unique and any duplicates are to the right
-// of the partition.
+// SortUnique sorts s and then partitions it in-place so that all the elements
+// at or left of the partition point are unique, and any duplicates are to the
+// right of the partition.  The return value is also the number of unique
+// elements in s.
 //
-// The return value is also the number of unique elements in s.
+// In addition to the cost of sorting, this function costs time proportional to
+// s.Len(), and uses constant space for bookkeeping.
 func SortUnique(s sort.Interface) int {
 	if s.Len() == 0 {
 		return 0
