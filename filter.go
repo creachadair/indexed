@@ -7,9 +7,9 @@ import (
 	"sort"
 )
 
-// Indexed expresses an indexed collection with a length and the ability to
+// Swapper expresses an indexed collection with a length and the ability to
 // exchange elements by position. It is a subset of sort.Interface.
-type Indexed interface {
+type Swapper interface {
 	// Len reports the number of elements in the collection.
 	Len() int
 
@@ -24,7 +24,7 @@ type Indexed interface {
 // type can be made sortable by including a comparison and a sortable type can
 // be made filterable by including a selector.
 type Filterable interface {
-	Indexed
+	Swapper
 
 	// Keep reports whether the element at index i should be retained.
 	Keep(i int) bool
@@ -81,7 +81,7 @@ func Partition(f Filterable) int {
 }
 
 type collFilter struct {
-	Indexed
+	Swapper
 	keep func(i int) bool
 }
 
@@ -89,16 +89,16 @@ func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
 // Adapt adapts v to a Filterable, with keep as the selection rule.
 //
-// If v is Indexed, which includes any implementation of sort.Interface, its
+// If v is a Swapper, which includes any implementation of sort.Interface, its
 // existing methods are used. Otherwise, if v is any slice type, it is adapted
-// to Indexed via reflection. Any other type will cause Adapt to panic.
+// to a Swapper via reflection. Any other type will cause Adapt to panic.
 func Adapt(v interface{}, keep func(i int) bool) Filterable {
-	if c, ok := v.(Indexed); ok {
-		return collFilter{Indexed: c, keep: keep}
+	if c, ok := v.(Swapper); ok {
+		return collFilter{Swapper: c, keep: keep}
 	} else if reflect.TypeOf(v).Kind() != reflect.Slice {
 		panic("filter: unable to adapt non-slice type")
 	}
-	return collFilter{Indexed: anySlice{reflect.ValueOf(v)}, keep: keep}
+	return collFilter{Swapper: anySlice{reflect.ValueOf(v)}, keep: keep}
 }
 
 // Slice filters v according to keep. It is shorthand for Partition(Adapt(v, keep)).
