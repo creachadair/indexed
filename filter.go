@@ -17,13 +17,13 @@ type Swapper interface {
 	Swap(i, j int)
 }
 
-// A Filterable is an indexed collection that can be partitioned according to a
-// selection rule, expressed by its Keep method.
+// A Partitioner is an indexed collection that can be partitioned according to
+// a selection rule, expressed by its Keep method.
 //
-// This interface is intentionally similar to sort.Interface so a filterable
-// type can be made sortable by including a comparison and a sortable type can
-// be made filterable by including a selector.
-type Filterable interface {
+// This interface is intentionally similar to sort.Interface so a Partitioner
+// can be made sortable by including a comparison and a sortable type can be
+// made partitionable by including a selector.
+type Partitioner interface {
 	Swapper
 
 	// Keep reports whether the element at index i should be retained.
@@ -37,7 +37,7 @@ type Filterable interface {
 //
 // Partition takes time proportional to f.Len() and swaps each kept element at
 // most once.
-func Partition(f Filterable) int {
+func Partition(f Partitioner) int {
 	i := 0 // left cursor
 	j := 0 // right cursor
 	n := f.Len()
@@ -87,12 +87,12 @@ type collFilter struct {
 
 func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
 
-// Adapt adapts v to a Filterable, with keep as the selection rule.
+// Adapt adapts v to a Partitioner, with keep as the selection rule.
 //
 // If v is a Swapper, which includes any implementation of sort.Interface, its
 // existing methods are used. Otherwise, if v is any slice type, it is adapted
 // to a Swapper via reflection. Any other type will cause Adapt to panic.
-func Adapt(v interface{}, keep func(i int) bool) Filterable {
+func Adapt(v interface{}, keep func(i int) bool) Partitioner {
 	if c, ok := v.(Swapper); ok {
 		return collFilter{Swapper: c, keep: keep}
 	} else if reflect.TypeOf(v).Kind() != reflect.Slice {
