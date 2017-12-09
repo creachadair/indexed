@@ -38,28 +38,27 @@ type Partitioner interface {
 // Partition takes time proportional to f.Len() and swaps each kept element at
 // most once.
 func Partition(f Partitioner) int {
-	i := 0 // left cursor
-	j := 0 // right cursor
 	n := f.Len()
 
 	// Invariant: Everything to the left of i is kept.
-	for {
-		// Left: Scan forward for an unkept element.
-		for i < n && f.Keep(i) {
-			i++
-		}
+	// Initialize left cursor (i) by scanning forward for an unkept element.
+	i := 0
+	for i < n && f.Keep(i) {
+		i++
+	}
+	// Initialize right cursor (j). If there is an out-of-place kept element,
+	// it must be after i.
+	j := i + 1
 
+	for i < n && j < n {
 		// Right: Scan forward for a kept element.
-		if j <= i {
-			j = i + 1
-		}
 		for j < n && !f.Keep(j) {
 			j++
 		}
 
-		// If either cursor reached the end, we're done:
+		// If the right cursor reached the end, we're done:
 		// Everything left of i is kept, everything ≥ i is unkept.
-		if i == n || j == n {
+		if j == n {
 			break
 		}
 
