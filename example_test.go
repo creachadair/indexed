@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"unicode"
 )
 
 type nonEmpty []string
@@ -64,7 +63,7 @@ func ExampleIndexed() {
 	ss := strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch")
 
 	i := Indexed(sort.StringSlice(ss), func(i int) bool {
-		return unicode.IsUpper(rune(ss[i][0]))
+		return ss[i][0] == 'P'
 	})
 
 	fmt.Println(strings.Join(ss[:i], " "))
