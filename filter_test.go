@@ -144,3 +144,18 @@ func TestAdaptIndexed(t *testing.T) {
 		t.Errorf("Partition %+v: got %+v, want %+v", input, vs, want)
 	}
 }
+
+func TestKeepRuns(t *testing.T) {
+	ss := []int{2, 4, 6, 8, 10, 1, 12, 14, 16, 18, 20, 3, 5, 7, 9, 11, 13, 15, 17, 19, 22, 21}
+	want := []int{2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22}
+
+	t.Logf("Before partitioning: %+v", ss)
+	n := Slice(ss, func(i int) bool { return ss[i]%2 == 0 }) // keep evens
+	if n != len(want) {
+		t.Errorf("Slice %+v: got %d elements, want %d", ss, n, len(want))
+	}
+	if !reflect.DeepEqual(ss[:n], want) {
+		t.Errorf("Slice:\ngot  %+v,\nwant %+v", ss[:n], want)
+	}
+	t.Logf("After partitioning:  %+v", ss)
+}
