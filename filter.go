@@ -17,13 +17,13 @@ type Swapper interface {
 	Swap(i, j int)
 }
 
-// A Partitioner is an indexed collection that can be partitioned according to
-// a selection rule, expressed by its Keep method.
+// A Filter is an indexed collection that can be filtered or partitioned
+// according to a selection rule, expressed by its Keep method.
 //
-// This interface is intentionally similar to sort.Interface so a Partitioner
-// can be made sortable by including a comparison and a sortable type can be
-// made partitionable by including a selector.
-type Partitioner interface {
+// This interface is intentionally similar to sort.Interface so a Filter can be
+// made sortable by including a comparison and a sortable type can be made
+// partitionable by including a selector.
+type Filter interface {
 	Swapper
 
 	// Keep reports whether the element at index i should be retained.
@@ -37,7 +37,7 @@ type Partitioner interface {
 //
 // Partition takes time proportional to f.Len() and swaps each kept element at
 // most once.
-func Partition(f Partitioner) int {
+func Partition(f Filter) int {
 	n := f.Len()
 
 	// Invariant: Everything to the left of i is kept.
