@@ -152,6 +152,8 @@ func SortUnique(s sort.Interface) int {
 // that all the elements at or left of the partition point are unique, and any
 // duplicates are to the right of the partition. The number of unique elements
 // is returned. The function panics if v is not of slice type.
+//
+// See also SortUnique, for which this is a convenience wrapper.
 func SortUniqueSlice(v interface{}, less func(i, j int) bool) int {
 	return SortUnique(sortSlice{
 		anySlice{reflect.ValueOf(v)},
