@@ -113,6 +113,30 @@ func TestSortUnique(t *testing.T) {
 	}
 }
 
+func TestSortUniqueSlice(t *testing.T) {
+	tests := []struct {
+		input []string
+		want  int
+	}{
+		{nil, 0},
+		{[]string{}, 0},
+		{[]string{"apple"}, 1},
+		{[]string{"plum", "plum", "plum", "plum", "plum"}, 1},
+		{[]string{"plum", "cherry", "apple", "apple", "plum", "apple", "cherry"}, 3},
+		{[]string{"c", "a", "d", "b", "e"}, 5},
+	}
+	for _, test := range tests {
+		got := SortUniqueSlice(test.input, func(i, j int) bool {
+			return test.input[i] < test.input[j]
+		})
+		if got != test.want {
+			t.Errorf("SortUniqueSlice(%+q, _): got %d, want %d", test.input, got, test.want)
+		} else if !sort.StringsAreSorted(test.input[:got]) {
+			t.Errorf("SortUniqueSlice(%+q, _): results out of order", test.input)
+		}
+	}
+}
+
 func TestAdaptSlice(t *testing.T) {
 	//             -  +  +  -  -  +  +
 	input := []int{8, 0, 2, 7, 5, 3, 4}

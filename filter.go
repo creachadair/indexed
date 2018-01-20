@@ -107,6 +107,14 @@ func (a anySlice) Swap(i, j int) {
 	v.Set(reflect.ValueOf(t))
 }
 
+// sortSlice adapts an anySlice so it can be used with SortUnique.
+type sortSlice struct {
+	anySlice
+	less func(i, j int) bool
+}
+
+func (s sortSlice) Less(i, j int) bool { return s.less(i, j) }
+
 // SortUnique sorts s and then partitions it in-place so that all the elements
 // at or left of the partition point are unique, and any duplicates are to the
 // right of the partition.  The return value is also the number of unique
@@ -138,4 +146,15 @@ func SortUnique(s sort.Interface) int {
 		j++
 	}
 	return i + 1
+}
+
+// SortUniqueSlice sorts v, which must be of slice type, then partitions it so
+// that all the elements at or left of the partition point are unique, and any
+// duplicates are to the right of the partition. The number of unique elements
+// is returned. The function panics if v is not of slice type.
+func SortUniqueSlice(v interface{}, less func(i, j int) bool) int {
+	return SortUnique(sortSlice{
+		anySlice{reflect.ValueOf(v)},
+		less,
+	})
 }
