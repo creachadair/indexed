@@ -1,7 +1,6 @@
 package filter
 
 // Generated code, do not edit (see gentypes.go).
-
 type stringFilter struct {
 	s    []string
 	keep func(string) bool
@@ -14,7 +13,6 @@ func (t stringFilter) Keep(i int) bool { return t.keep(t.s[i]) }
 // Strings modifies *ss in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If ss == nil, this function panics.
 func Strings(ss *[]string, keep func(string) bool) { *ss = (*ss)[:Partition(stringFilter{*ss, keep})] }
-
 
 type intFilter struct {
 	s    []int

@@ -72,8 +72,7 @@ func main() {
 	}
 }
 
-const typeDef = `
-type %[1]s struct {
+const typeDef = `type %[1]s struct {
 	s []%[2]s
 	keep func(%[2]s) bool
 }
