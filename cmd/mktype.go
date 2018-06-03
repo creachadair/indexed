@@ -81,5 +81,4 @@ const typeDef = `type %[1]s struct {
 const consFunc = `
 // %[1]s modifies *ss in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If ss == nil, this function panics.
-func %[1]s(ss *[]%[2]s, keep func(%[2]s) bool) { *ss = (*ss)[:Partition(%[3]s{*ss, keep})] }
-`
+func %[1]s(ss *[]%[2]s, keep func(%[2]s) bool) { *ss = (*ss)[:Partition(%[3]s{*ss, keep})] }`

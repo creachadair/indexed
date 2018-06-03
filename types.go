@@ -26,4 +26,3 @@ func (t intFilter) Keep(i int) bool { return t.keep(t.s[i]) }
 // Ints modifies *ss in-place to remove any elements for which keep returns
 // false. Relative input order is preserved. If ss == nil, this function panics.
 func Ints(ss *[]int, keep func(int) bool) { *ss = (*ss)[:Partition(intFilter{*ss, keep})] }
-
