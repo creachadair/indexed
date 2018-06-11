@@ -1,6 +1,7 @@
 package filter
 
 // Generated code, do not edit (see gentypes.go).
+
 type stringFilter struct {
 	s    []string
 	keep func(string) bool

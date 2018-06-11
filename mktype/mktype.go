@@ -46,7 +46,7 @@ func main() {
 	// If specified, emit a package name.
 	if *pkgName != "" {
 		fmt.Fprintf(buf, "package %s\n", *pkgName)
-		fmt.Fprintln(buf, "// Generated code, do not edit (see gentypes.go).")
+		fmt.Fprint(buf, "// Generated code, do not edit (see gentypes.go).\n\n")
 	}
 
 	// Generate the base type.
