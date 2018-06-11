@@ -1,6 +1,6 @@
-// Package filter implements a general-purpose filter for indexed collections
+// Package indexed implements a general-purpose filter for indexed collections
 // such as slices.
-package filter
+package indexed
 
 import (
 	"reflect"
@@ -17,33 +17,22 @@ type Swapper interface {
 	Swap(i, j int)
 }
 
-// A Filter is an indexed collection that can be filtered or partitioned
-// according to a selection rule, expressed by its Keep method.
+// Partition rearranges the elements of v so that all the elements for which
+// keep returns true precede all the non-kept elements, and returns an index i
+// such that keep(j) == j < i for all 0 ≤ j ≤ f.Len().
 //
-// This interface is intentionally similar to sort.Interface so a Filter can be
-// made sortable by including a comparison and a sortable type can be made
-// partitionable by including a selector.
-type Filter interface {
-	Swapper
-
-	// Keep reports whether the element at index i should be retained.
-	Keep(i int) bool
-}
-
-// Partition rearranges the elements of f so that all the kept elements precede
-// all the non-kept elements, returning an index i such that f.Keep(j) == j < i
-// for all 0 ≤ j ≤ f.Len(). The relative input order of the kept elements is
-// preserved, but the unkept elements are permuted arbitrarily.
+// The relative input order of the kept elements is preserved, but the unkept
+// elements are permuted arbitrarily.
 //
-// Partition takes time proportional to f.Len() and swaps each kept element at
+// Partition takes time proportional to v.Len() and swaps each kept element at
 // most once.
-func Partition(f Filter) int {
-	n := f.Len()
+func Partition(v Swapper, keep func(i int) bool) int {
+	n := v.Len()
 
 	// Invariant: Everything to the left of i is kept.
 	// Initialize left cursor (i) by scanning forward for an unkept element.
 	i := 0
-	for i < n && f.Keep(i) {
+	for i < n && keep(i) {
 		i++
 	}
 	// Initialize right cursor (j). If there is an out-of-place kept element,
@@ -52,7 +41,7 @@ func Partition(f Filter) int {
 
 	for i < n && j < n {
 		// Right: Scan forward for a kept element.
-		for j < n && !f.Keep(j) {
+		for j < n && !keep(j) {
 			j++
 		}
 
@@ -72,28 +61,16 @@ func Partition(f Filter) int {
 		// The next unkept element (if any) must therefore be at i+1, and the
 		// next candidate to replace it must be > j.
 
-		f.Swap(i, j)
+		v.Swap(i, j)
 		i++
 		j++
 	}
 	return i
 }
 
-type collFilter struct {
-	Swapper
-	keep func(i int) bool
-}
-
-func (cf collFilter) Keep(i int) bool { return cf.keep(i) }
-
-// Indexed partitions a Swapper, using keep as the selection rule.
-func Indexed(v Swapper, keep func(i int) bool) int {
-	return Partition(collFilter{Swapper: v, keep: keep})
-}
-
-// Slice filters v according to keep. It will panic if v is not a slice type.
-func Slice(v interface{}, keep func(i int) bool) int {
-	return Indexed(anySlice{reflect.ValueOf(v)}, keep)
+// PartitionSlice filters v according to keep. It will panic if v is not a slice type.
+func PartitionSlice(v interface{}, keep func(i int) bool) int {
+	return Partition(anySlice{reflect.ValueOf(v)}, keep)
 }
 
 type anySlice struct{ v reflect.Value }

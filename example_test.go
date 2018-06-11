@@ -1,25 +1,20 @@
-package filter
+package indexed_test
 
 import (
 	"fmt"
 	"sort"
 	"strings"
+
+	"bitbucket.org/creachadair/indexed"
 )
 
-type nonEmpty []string
-
-func (n nonEmpty) Len() int           { return len(n) }
-func (n nonEmpty) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
-func (n nonEmpty) Keep(i int) bool    { return n[i] != "" }
-func (n nonEmpty) Less(i, j int) bool { return n[i] < n[j] }
-
 func ExamplePartition() {
-	// var nonEmpty []string
-	// ... methods
 	s1 := strings.Split("a,lot,,of,values,,here,", ",")
 	fmt.Printf("in  %+q\n", s1)
 
-	i := Partition(nonEmpty(s1))
+	i := indexed.Partition(sort.StringSlice(s1), func(i int) bool {
+		return s1[i] != ""
+	})
 	fmt.Println("i =", i)
 	fmt.Printf("old %+q\n", s1)
 
@@ -33,9 +28,9 @@ func ExamplePartition() {
 	// new ["a" "lot" "of" "values" "here"]
 }
 
-func ExampleStrings() {
+func ExampleFilterStrings() {
 	ss := strings.Fields("many of us have seen the cost of war")
-	Strings(&ss, func(s string) bool {
+	indexed.FilterStrings(&ss, func(s string) bool {
 		return len(s) >= 4
 	})
 	fmt.Println(strings.Join(ss, " "))
@@ -51,28 +46,17 @@ func isPrime(z int) bool {
 	return z == 2 || z > 2 && z%2 == 1
 }
 
-func ExampleInts() {
+func ExampleFilterInts() {
 	zz := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
-	Ints(&zz, isPrime)
+	indexed.FilterInts(&zz, isPrime)
 	fmt.Printf("primes: %+v\n", zz)
 	// Output:
 	// primes: [2 3 5 7 11 13]
 }
 
-func ExampleIndexed() {
-	ss := strings.Fields("Peter Piper picked a peck of Pickled Peppers for lunch")
-
-	i := Indexed(sort.StringSlice(ss), func(i int) bool {
-		return ss[i][0] == 'P'
-	})
-
-	fmt.Println(strings.Join(ss[:i], " "))
-	// Output: Peter Piper Pickled Peppers
-}
-
-func ExampleSlice() {
+func ExamplePartitionSlice() {
 	zs := []int{-8, 6, -7, 5, -3, 0, -9}
-	i := Slice(zs, func(i int) bool {
+	i := indexed.PartitionSlice(zs, func(i int) bool {
 		return zs[i] >= 0
 	})
 
@@ -86,7 +70,7 @@ func ExampleSortUnique() {
 	// SortUnique can be used to remove duplicates from a slice without
 	// allocating a new slice.  It does this by sorting the slice in-place and
 	// moving all the unique elements to the head of the slice.
-	n := SortUnique(sort.StringSlice(ss))
+	n := indexed.SortUnique(sort.StringSlice(ss))
 	fmt.Println(strings.Join(ss[:n], " "))
 	// Output: and but if not or
 }

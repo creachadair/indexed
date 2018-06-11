@@ -1,4 +1,4 @@
-package filter
+package indexed
 
 import (
 	"reflect"
@@ -8,15 +8,6 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 )
-
-type ssfunc struct {
-	ss   []string
-	keep func(string) bool
-}
-
-func (s ssfunc) Len() int        { return len(s.ss) }
-func (s ssfunc) Swap(i, j int)   { s.ss[i], s.ss[j] = s.ss[j], s.ss[i] }
-func (s ssfunc) Keep(i int) bool { return s.keep(s.ss[i]) }
 
 func TestPartition(t *testing.T) {
 	tests := []struct {
@@ -45,9 +36,9 @@ don't forget to pay the rent`, []string{
 	for _, test := range tests {
 		t.Logf("%s: input %q", test.desc, test.input)
 		words := strings.Fields(test.input)
-		gotPos := Partition(ssfunc{
-			ss:   words,
-			keep: test.keep,
+
+		gotPos := Partition(stringSwapper(words), func(i int) bool {
+			return test.keep(words[i])
 		})
 
 		// Verify that we got the expected breakpoint.
@@ -64,7 +55,7 @@ don't forget to pay the rent`, []string{
 	}
 }
 
-func TestStrings(t *testing.T) {
+func TestFilterStrings(t *testing.T) {
 	tests := []struct {
 		input, want string
 		keep        func(string) bool
@@ -78,7 +69,7 @@ func TestStrings(t *testing.T) {
 	for _, test := range tests {
 		t.Logf("Input %q", test.input)
 		words := strings.Fields(test.input)
-		Strings(&words, test.keep)
+		FilterStrings(&words, test.keep)
 		t.Logf("After partition: %+v", words)
 
 		want := strings.Fields(test.want)
@@ -143,12 +134,12 @@ func TestAdaptSlice(t *testing.T) {
 	vs := make([]int, len(input))
 	copy(vs, input)
 
-	Slice(vs, func(i int) bool { return vs[i] < 5 })
+	PartitionSlice(vs, func(i int) bool { return vs[i] < 5 })
 
 	//            +  +  +  +  -  -  -
 	want := []int{0, 2, 3, 4, 5, 8, 7}
 	if !reflect.DeepEqual(vs, want) {
-		t.Errorf("Partition %+v: got %+v, want %+v", input, vs, want)
+		t.Errorf("PartitionSlice %+v: got %+v, want %+v", input, vs, want)
 	}
 }
 
@@ -158,7 +149,7 @@ func TestAdaptIndexed(t *testing.T) {
 	vs := make([]string, len(input))
 	copy(vs, input)
 
-	Indexed(sort.StringSlice(vs), func(i int) bool {
+	Partition(sort.StringSlice(vs), func(i int) bool {
 		return len(vs[i]) <= 3
 	})
 
@@ -174,7 +165,7 @@ func TestKeepRuns(t *testing.T) {
 	want := []int{2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22}
 
 	t.Logf("Before partitioning: %+v", ss)
-	n := Slice(ss, func(i int) bool { return ss[i]%2 == 0 }) // keep evens
+	n := PartitionSlice(ss, func(i int) bool { return ss[i]%2 == 0 }) // keep evens
 	if n != len(want) {
 		t.Errorf("Slice %+v: got %d elements, want %d", ss, n, len(want))
 	}

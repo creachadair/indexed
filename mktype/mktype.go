@@ -1,3 +1,5 @@
+// Program mktype generates filter functions for specified types.  It is
+// intended for use with "go generate".
 package main
 
 import (
@@ -12,8 +14,8 @@ import (
 var (
 	typeName = flag.String("type", "", "Generated type name")
 	baseType = flag.String("base", "", "Base type")
+	funcName = flag.String("func", "", "Filter function type name")
 	pkgName  = flag.String("pkg", "", "Package name (optional)")
-	consName = flag.String("cons", "", "Constructor function name (optional)")
 	outputTo = flag.String("out", "", "Output file path (optional)")
 	doAppend = flag.Bool("append", false, "Append output rather than overwriting")
 )
@@ -25,6 +27,10 @@ func main() {
 		log.Fatal("You must provide a non-empty --type name")
 	case *baseType == "":
 		log.Fatal("You must provide a non-empty --base type")
+	case *funcName == "":
+		log.Fatal("You must provide a non-empty --func type name")
+	case *pkgName == "" && !*doAppend:
+		log.Fatal("You must provide a --pkg name when --append=false")
 	}
 	out := os.Stdout
 	if *outputTo != "" {
@@ -46,21 +52,18 @@ func main() {
 	// If specified, emit a package name.
 	if *pkgName != "" {
 		fmt.Fprintf(buf, "package %s\n", *pkgName)
-		fmt.Fprint(buf, "// Generated code, do not edit (see gentypes.go).\n\n")
+		fmt.Fprint(buf, "// Generated code, do not edit (see gentypes.go).\n")
 	}
 
-	// Generate the base type.
-	fmt.Fprintf(buf, typeDef, *typeName, *baseType)
+	// Generate the base type definition.
+	fmt.Fprintf(buf, "\ntype %[1]s []%[2]s\n", *typeName, *baseType)
 
-	// Generate required methods.
-	fmt.Fprintf(buf, "func (t %[1]s) Len() int { return len(t.s) }\n", *typeName)
-	fmt.Fprintf(buf, "func (t %[1]s) Swap(i, j int) { t.s[i], t.s[j] = t.s[j], t.s[i] }\n", *typeName)
-	fmt.Fprintf(buf, "func (t %[1]s) Keep(i int) bool { return t.keep(t.s[i]) }\n", *typeName)
+	// Generate the required methods for the interface.
+	fmt.Fprintf(buf, "func (t %[1]s) Len() int { return len(t) }\n", *typeName)
+	fmt.Fprintf(buf, "func (t %[1]s) Swap(i, j int) { t[i], t[j] = t[j], t[i] }\n", *typeName)
 
-	// Generate a constructor function, if desired.
-	if *consName != "" {
-		fmt.Fprintf(buf, consFunc, *consName, *baseType, *typeName)
-	}
+	// Generate a constructor function.
+	fmt.Fprintf(buf, filterFunc, *funcName, *baseType, *typeName)
 
 	code, err := format.Source(buf.Bytes())
 	if err != nil {
@@ -72,13 +75,12 @@ func main() {
 	}
 }
 
-const typeDef = `type %[1]s struct {
-	s []%[2]s
-	keep func(%[2]s) bool
+const filterFunc = `
+// Filter%[1]s modifies *ss in-place to remove any elements for which keep returns
+// false. Relative input order is preserved. If ss == nil, this function panics.
+func Filter%[1]s(ss *[]%[2]s, keep func(%[2]s) bool) {
+   *ss = (*ss)[:Partition(%[3]s(*ss), func(i int) bool {
+      return keep((*ss)[i])
+   })]
 }
 `
-
-const consFunc = `
-// %[1]s modifies *ss in-place to remove any elements for which keep returns
-// false. Relative input order is preserved. If ss == nil, this function panics.
-func %[1]s(ss *[]%[2]s, keep func(%[2]s) bool) { *ss = (*ss)[:Partition(%[3]s{*ss, keep})] }`
