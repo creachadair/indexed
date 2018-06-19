@@ -1,5 +1,7 @@
 # indexed
 
+http://godoc.org/bitbucket.org/creachadair/indexed
+
 The `indexed` package supports sorting and partitioning the contents of an
 indexed collection (typically a slice), in-place according to a selection rule.
 
@@ -11,5 +13,3 @@ collection, and constant space overhead for bookkeeping.
 This operation permits a collection to be filtered efficiently without
 redundant copying or movement of data. Some convenience functions are provided
 for applying this to common built-in data types.
-
-View documentation on [GoDoc](http://godoc.org/bitbucket.org/creachadair/indexed).
