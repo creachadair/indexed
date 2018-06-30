@@ -52,11 +52,11 @@ func main() {
 	// If specified, emit a package name.
 	if *pkgName != "" {
 		fmt.Fprintf(buf, "package %s\n", *pkgName)
-		fmt.Fprint(buf, "// Generated code, do not edit (see gentypes.go).\n\n")
+		fmt.Fprint(buf, "// Generated code, do not edit (see gentypes.go).\n")
 	}
 
 	// Generate the base type definition.
-	fmt.Fprintf(buf, "type %[1]s []%[2]s\n", *typeName, *baseType)
+	fmt.Fprintf(buf, "\ntype %[1]s []%[2]s\n", *typeName, *baseType)
 
 	// Generate the required methods for the interface.
 	fmt.Fprintf(buf, "func (t %[1]s) Len() int { return len(t) }\n", *typeName)
@@ -69,7 +69,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error in generated code: %v\n%s", err, buf.String())
 	}
-	fmt.Fprintln(out, string(code))
+	fmt.Fprint(out, string(code))
 	if err := out.Close(); err != nil {
 		log.Printf("Warning: error closing output: %v", err)
 	}

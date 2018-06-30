@@ -27,4 +27,3 @@ func FilterInts(ss *[]int, keep func(int) bool) {
 		return keep((*ss)[i])
 	})]
 }
-
