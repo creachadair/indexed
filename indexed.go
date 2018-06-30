@@ -41,18 +41,19 @@ func Partition(v Swapper, keep func(i int) bool) int {
 
 	for i < n && j < n {
 		// Right: Scan forward for a kept element.
-		for j < n && !keep(j) {
+		for !keep(j) {
 			j++
+
+			// If the right cursor reached the end, we're done: Everything left
+			// of i is kept, everything ≥ i is unkept.
+			if j == n {
+				return i
+			}
 		}
 
-		// If the right cursor reached the end, we're done:
-		// Everything left of i is kept, everything ≥ i is unkept.
-		if j == n {
-			break
-		}
-
-		// Otherwise, the elements under both cursors are out of order. Put
-		// them in order, then advance the cursors. After swapping, we have:
+		// Reaching here, the elements under both cursors are out of
+		// order. Swap to put them in order, then advance the cursors.
+		// After swapping, we have:
 		//
 		//    [+ + + + + + - - - - ? ? ? ?]
 		//     0         i       j         n
