@@ -15,7 +15,6 @@ func FilterStrings(ss *[]string, keep func(string) bool) {
 	})]
 }
 
-
 type intSwapper []int
 
 func (t intSwapper) Len() int      { return len(t) }
