@@ -126,15 +126,25 @@ func SortUnique(s sort.Interface) int {
 	return i + 1
 }
 
-// SortUniqueSlice sorts v, which must be of slice type, then partitions it so
-// that all the elements left of the partition point are unique, and any
-// duplicates are to the right of the partition. The number of unique elements
-// is returned. The function panics if v is not of slice type.
+// SortUniqueSlice sorts v, which must be a slice type or a pointer to a slice,
+// then partitions it so that all the elements left of the partition point are
+// unique and any duplicates are to the right of the partition.
+//
+// The number of unique elements is returned. If v is a pointer, the pointer
+// target slice is also resliced to the length returned.
+//
+// This function panics if v is not a slice or a pointer to a slice.
 //
 // See also SortUnique, for which this is a convenience wrapper.
 func SortUniqueSlice(v interface{}, less func(i, j int) bool) int {
-	return SortUnique(sortSlice{
-		anySlice{reflect.ValueOf(v)},
+	t := reflect.ValueOf(v)
+	u := reflect.Indirect(t)
+	n := SortUnique(sortSlice{
+		anySlice{u},
 		less,
 	})
+	if t.Kind() == reflect.Ptr {
+		t.Elem().Set(u.Slice(0, n))
+	}
+	return n
 }

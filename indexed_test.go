@@ -93,8 +93,7 @@ func TestSortUnique(t *testing.T) {
 		{[]string{"p", "p", "p", "p", "p"}, 1},
 	}
 	for _, test := range tests {
-		result := make([]string, len(test.input))
-		copy(result, test.input)
+		result := cp(test.input)
 		got := SortUnique(sort.StringSlice(result))
 		if got != test.want {
 			t.Errorf("SortUnique(%+q): got %d, want %d", test.input, got, test.want)
@@ -116,16 +115,40 @@ func TestSortUniqueSlice(t *testing.T) {
 		{[]string{"plum", "cherry", "apple", "apple", "plum", "apple", "cherry"}, 3},
 		{[]string{"c", "a", "d", "b", "e"}, 5},
 	}
-	for _, test := range tests {
-		got := SortUniqueSlice(test.input, func(i, j int) bool {
-			return test.input[i] < test.input[j]
-		})
-		if got != test.want {
-			t.Errorf("SortUniqueSlice(%+q, _): got %d, want %d", test.input, got, test.want)
-		} else if !sort.StringsAreSorted(test.input[:got]) {
-			t.Errorf("SortUniqueSlice(%+q, _): results out of order", test.input)
+	t.Run("PlainSlice", func(t *testing.T) {
+		for _, test := range tests {
+			result := cp(test.input)
+			got := SortUniqueSlice(result, func(i, j int) bool {
+				return result[i] < result[j]
+			})
+			t.Logf("SortUniqueSlice(%+q, <) = %d, %+q", test.input, got, result[:got])
+			if got != test.want {
+				t.Errorf("Breakpoint: got %d, want %d", got, test.want)
+			}
+			if !sort.StringsAreSorted(result[:got]) {
+				t.Errorf("Result after sorting is out of order: %+q", result)
+			}
 		}
-	}
+	})
+
+	t.Run("SlicePointer", func(t *testing.T) {
+		for _, test := range tests {
+			result := cp(test.input)
+			got := SortUniqueSlice(&result, func(i, j int) bool {
+				return result[i] < result[j]
+			})
+			t.Logf("SortUniqueSlice(%+q, <) = %d, %+q", test.input, got, result)
+			if got != test.want {
+				t.Errorf("Breakpoint: got %d, want %d", got, test.want)
+			}
+			if len(result) != got {
+				t.Errorf("Length after sort: got %d, want %d", len(result), got)
+			}
+			if !sort.StringsAreSorted(result) {
+				t.Errorf("Result after sorting is out of order: %+q", result)
+			}
+		}
+	})
 }
 
 func TestAdaptSlice(t *testing.T) {
@@ -173,4 +196,10 @@ func TestKeepRuns(t *testing.T) {
 		t.Errorf("Slice:\ngot  %+v,\nwant %+v", ss[:n], want)
 	}
 	t.Logf("After partitioning:  %+v", ss)
+}
+
+func cp(ss []string) []string {
+	out := make([]string, len(ss))
+	copy(out, ss)
+	return out
 }
