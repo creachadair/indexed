@@ -128,10 +128,11 @@ func SortUnique(s sort.Interface) int {
 }
 
 // SortUniqueSlice sorts v, which must be a slice or a pointer to a slice, then
-// partitions v in-place so that all the elements to the left of the partition
-// point are unique and in order, with any duplicates at or to the right of the
-// partition point. The elements after the partition point will not in general
-// be in order. The return value is the number of unique elements.
+// partitions the slice in-place so that all the elements to the left of the
+// partition point are unique and in order, with any duplicates at or to the
+// right of the partition point. The elements after the partition point will
+// not in general be in order. The return value is the number of unique
+// elements.
 //
 // If v is a pointer, the pointer target slice is also resliced to the length
 // returned.  This function panics if v is not a slice or a pointer to a slice.
