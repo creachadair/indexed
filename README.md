@@ -2,6 +2,8 @@
 
 http://godoc.org/bitbucket.org/creachadair/indexed
 
+[![Go Report Card](https://goreportcard.com/badge/bitbucket.org/creachadair/indexed)](https://goreportcard.com/report/bitbucket.org/creachadair/indexed)
+
 The `indexed` package supports sorting and partitioning the contents of an
 indexed collection (typically a slice), in-place according to a selection rule.
 
