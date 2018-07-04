@@ -17,14 +17,14 @@ type Swapper interface {
 	Swap(i, j int)
 }
 
-// Partition rearranges the elements of v so that all the elements for which
-// keep returns true precede all the non-kept elements, and returns an index i
-// such that keep(j) == j < i for all 0 ≤ j ≤ f.Len().
+// Partition rearranges v so that there is an index 0 ≤ i < v.Len() such that
+// keep(j) is true for all j < i and keep(j) is false for all j ≥ i.  The value
+// of i is returned.
 //
-// The relative input order of the kept elements is preserved, but the unkept
-// elements are permuted arbitrarily.
+// The relative input order of the kept elements (indexes < i) is preserved,
+// but the unkept elements (indexes ≥ i) are permuted arbitrarily.
 //
-// Partition takes time proportional to v.Len() and swaps each kept element at
+// Partition uses time proportional to v.Len() and swaps each kept element at
 // most once.
 func Partition(v Swapper, keep func(i int) bool) int {
 	n := v.Len()
