@@ -68,9 +68,27 @@ func ExampleSortUnique() {
 	ss := strings.Fields("and or not or if and not but and if not or and and if")
 
 	// SortUnique can be used to remove duplicates from a slice without
-	// allocating a new slice.  It does this by sorting the slice in-place and
-	// moving all the unique elements to the head of the slice.
+	// allocating a new slice.  It sorts the slice in-place and moves all the
+	// unique elements to the head of the slice, duplicates to the tail.
 	n := indexed.SortUnique(sort.StringSlice(ss))
-	fmt.Println(strings.Join(ss[:n], " "))
-	// Output: and but if not or
+
+	fmt.Println(n)
+	fmt.Println(strings.Join(ss[:n], " "), "| ...", len(ss[n:]), "more")
+	// Output:
+	// 5
+	// and but if not or | ... 10 more
+}
+
+func ExampleSortUniqueSlice() {
+	ss := strings.Fields("every breath you take every move you make every bond you break")
+
+	// When given a pointer to a slice, indexed.SortUniqueSlice will reslice
+	// the target of the pointer to just the unique elements.
+	fmt.Println(indexed.SortUniqueSlice(&ss, func(i, j int) bool {
+		return ss[i] < ss[j]
+	}))
+	fmt.Println(strings.Join(ss, " "))
+	// Output:
+	// 8
+	// bond break breath every make move take you
 }
