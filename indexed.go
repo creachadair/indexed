@@ -94,11 +94,12 @@ type sortSlice struct {
 func (s sortSlice) Less(i, j int) bool { return s.less(i, j) }
 
 // SortUnique sorts s and then partitions it in-place so that all the elements
-// left of the partition point are unique, and any duplicates are to the right
-// of the partition.  The return value is also the number of unique elements in
-// s.
+// to the left of the partition point are unique and in order, with any
+// duplicates at or to the right of the partition point.  The elements after
+// the partition point will not in general be in order. The return value is the
+// number of unique elements in s.
 //
-// In addition to the cost of sorting, this function costs time proportional to
+// In addition to the cost to sort, this function takes time proportional to
 // s.Len(), and uses constant space for bookkeeping.
 func SortUnique(s sort.Interface) int {
 	if s.Len() == 0 {
@@ -126,14 +127,14 @@ func SortUnique(s sort.Interface) int {
 	return i + 1
 }
 
-// SortUniqueSlice sorts v, which must be a slice type or a pointer to a slice,
-// then partitions it so that all the elements left of the partition point are
-// unique and any duplicates are to the right of the partition.
+// SortUniqueSlice sorts v, which must be a slice or a pointer to a slice, then
+// partitions v in-place so that all the elements to the left of the partition
+// point are unique and in order, with any duplicates at or to the right of the
+// partition point. The elements after the partition point will not in general
+// be in order. The return value is the number of unique elements.
 //
-// The number of unique elements is returned. If v is a pointer, the pointer
-// target slice is also resliced to the length returned.
-//
-// This function panics if v is not a slice or a pointer to a slice.
+// If v is a pointer, the pointer target slice is also resliced to the length
+// returned.  This function panics if v is not a slice or a pointer to a slice.
 //
 // See also SortUnique, for which this is a convenience wrapper.
 func SortUniqueSlice(v interface{}, less func(i, j int) bool) int {
