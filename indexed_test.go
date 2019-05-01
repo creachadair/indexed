@@ -1,12 +1,12 @@
 package indexed
 
 import (
-	"reflect"
 	"sort"
 	"strings"
 	"testing"
 
-	"github.com/kylelemons/godebug/pretty"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestPartition(t *testing.T) {
@@ -49,8 +49,8 @@ don't forget to pay the rent`, []string{
 		// Verify that we got the expected words, in the right relative order.
 		t.Logf("After partition: %+v ~ %+v", words[:gotPos], words[gotPos:])
 		got := words[:gotPos]
-		if diff := pretty.Compare(got, test.want); diff != "" {
-			t.Errorf("Prefix differs from expected (-got, +want)\n%s", diff)
+		if diff := cmp.Diff(test.want, got, cmpopts.EquateEmpty()); diff != "" {
+			t.Errorf("Prefix differs from expected (-want, +got)\n%s", diff)
 		}
 	}
 }
@@ -73,8 +73,8 @@ func TestFilterStrings(t *testing.T) {
 		t.Logf("After partition: %+v", words)
 
 		want := strings.Fields(test.want)
-		if diff := pretty.Compare(words, want); diff != "" {
-			t.Errorf("Strings %q output differs from expected (-got, +want)\n%s", test.input, diff)
+		if diff := cmp.Diff(want, words); diff != "" {
+			t.Errorf("Strings %q output differs from expected (-want, +got)\n%s", test.input, diff)
 		}
 	}
 }
@@ -161,8 +161,8 @@ func TestAdaptSlice(t *testing.T) {
 
 	//            +  +  +  +  -  -  -
 	want := []int{0, 2, 3, 4, 5, 8, 7}
-	if !reflect.DeepEqual(vs, want) {
-		t.Errorf("PartitionSlice %+v: got %+v, want %+v", input, vs, want)
+	if diff := cmp.Diff(want, vs); diff != "" {
+		t.Errorf("PartitionSlice %+v: (-want, +got)\n%s", input, diff)
 	}
 }
 
@@ -178,8 +178,8 @@ func TestAdaptIndexed(t *testing.T) {
 
 	//               +     +      +      +      -        -       -
 	want := []string{"us", "now", "and", "the", "share", "join", "software"}
-	if !reflect.DeepEqual(vs, want) {
-		t.Errorf("Partition %+v: got %+v, want %+v", input, vs, want)
+	if diff := cmp.Diff(want, vs); diff != "" {
+		t.Errorf("Partition %+v: (-want, +got)\n%s", input, diff)
 	}
 }
 
@@ -189,11 +189,8 @@ func TestKeepRuns(t *testing.T) {
 
 	t.Logf("Before partitioning: %+v", ss)
 	n := PartitionSlice(ss, func(i int) bool { return ss[i]%2 == 0 }) // keep evens
-	if n != len(want) {
-		t.Errorf("Slice %+v: got %d elements, want %d", ss, n, len(want))
-	}
-	if !reflect.DeepEqual(ss[:n], want) {
-		t.Errorf("Slice:\ngot  %+v,\nwant %+v", ss[:n], want)
+	if diff := cmp.Diff(want, ss[:n]); diff != "" {
+		t.Errorf("Slice: (-want, +got)\n%s", diff)
 	}
 	t.Logf("After partitioning:  %+v", ss)
 }
