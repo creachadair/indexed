@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"bitbucket.org/creachadair/indexed"
+	"github.com/creachadair/indexed"
 )
 
 func ExamplePartition() {
