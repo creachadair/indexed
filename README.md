@@ -1,7 +1,6 @@
 # indexed
 
-http://godoc.org/github.com/creachadair/indexed
-
+[![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/creachadair/indexed)
 [![Go Report Card](https://goreportcard.com/badge/github.com/creachadair/indexed)](https://goreportcard.com/report/github.com/creachadair/indexed)
 
 The `indexed` package supports sorting and partitioning the contents of an
